@@ -1,0 +1,255 @@
+/* ==========================================================================
+   polish.css — Phase 6 UI polish layer (public site)
+   Purely additive: only adds new rules / new classes and lightly tunes
+   existing selectors with more specific rules. Nothing here removes or
+   overrides functional CSS from styles.css.
+   ========================================================================== */
+
+:root {
+  --polish-primary: #f4623a;
+  --polish-primary-dark: #d94f2b;
+  --polish-radius: 10px;
+  --polish-shadow: 0 6px 18px rgba(20, 20, 20, 0.08);
+  --polish-shadow-hover: 0 14px 32px rgba(20, 20, 20, 0.16);
+  --polish-transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Smooth scrolling for in-page anchors (nav links already animate via JS;
+   this covers any plain #anchor links too, and is a harmless no-op
+   elsewhere). Respects users who've asked for reduced motion. */
+@media (prefers-reduced-scroll-behavior: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+
+/* -------------------------------------------------------------------- */
+/* Typography                                                            */
+/* -------------------------------------------------------------------- */
+body {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+h1, h2, h3, h4, h5, h6 {
+  letter-spacing: 0.01em;
+}
+p { line-height: 1.7; }
+
+/* -------------------------------------------------------------------- */
+/* Page load spinner                                                     */
+/* -------------------------------------------------------------------- */
+#page-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 20000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  transition: opacity 0.35s ease, visibility 0.35s ease;
+}
+#page-loader.is-hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+#page-loader .polish-spinner {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 4px solid rgba(244, 98, 58, 0.18);
+  border-top-color: var(--polish-primary);
+  animation: polish-spin 0.8s linear infinite;
+}
+@keyframes polish-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Small inline spinner usable inside buttons/areas awaiting an AJAX
+   response (e.g. form submits) — additive, opt-in via .polish-inline-spinner */
+.polish-inline-spinner {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: polish-spin 0.7s linear infinite;
+  vertical-align: -0.15em;
+  margin-right: 0.4em;
+}
+
+/* -------------------------------------------------------------------- */
+/* Fade / reveal animations                                              */
+/* -------------------------------------------------------------------- */
+.fade-in { animation: polish-fade-in 0.5s ease both; }
+@keyframes polish-fade-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Elements marked for scroll-reveal by polish.js. Starts hidden only
+   once JS has attached the class, so content never disappears if JS
+   fails to load (progressive enhancement). */
+.js-reveal-ready { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
+.js-reveal-ready.js-revealed { opacity: 1; transform: translateY(0); }
+
+@media (prefers-reduced-motion: reduce) {
+  .fade-in, .js-reveal-ready {
+    animation: none !important;
+    transition: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* -------------------------------------------------------------------- */
+/* Card & room-card hover effects                                        */
+/* -------------------------------------------------------------------- */
+.card {
+  transition: var(--polish-transition);
+}
+.card.item-rooms:hover,
+.card:hover.shadow,
+a.portfolio-box:hover .img-fluid {
+  box-shadow: var(--polish-shadow-hover);
+}
+.card.item-rooms {
+  border: 1px solid rgba(0,0,0,0.06);
+  transition: var(--polish-transition);
+}
+.card.item-rooms:hover {
+  transform: translateY(-4px);
+}
+
+/* Portfolio / room thumbnail boxes on the homepage */
+a.portfolio-box {
+  display: block;
+  overflow: hidden;
+  position: relative;
+}
+a.portfolio-box .img-fluid {
+  transition: transform 0.5s ease;
+}
+a.portfolio-box:hover .img-fluid {
+  transform: scale(1.06);
+}
+a.portfolio-box .portfolio-box-caption {
+  transition: var(--polish-transition);
+}
+
+/* Generic "lift on hover" utility, available for any card-like block */
+.hover-lift {
+  transition: var(--polish-transition);
+}
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--polish-shadow-hover);
+}
+
+/* -------------------------------------------------------------------- */
+/* Button hover / focus polish                                           */
+/* -------------------------------------------------------------------- */
+.btn {
+  transition: var(--polish-transition);
+}
+.btn:hover {
+  transform: translateY(-1px);
+}
+.btn:active {
+  transform: translateY(0);
+}
+.btn-primary:hover {
+  box-shadow: 0 6px 16px rgba(244, 98, 58, 0.35);
+}
+.btn:focus-visible {
+  outline: 2px solid var(--polish-primary);
+  outline-offset: 2px;
+}
+
+/* -------------------------------------------------------------------- */
+/* Spacing consistency for the search / filter cards                     */
+/* -------------------------------------------------------------------- */
+#filter-book .card-body,
+.page-section .card .card-body {
+  padding: 1.5rem;
+}
+#filter .form-control,
+.page-section form .form-control {
+  border-radius: 6px;
+}
+#filter label,
+.page-section form label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 0.3rem;
+}
+
+/* -------------------------------------------------------------------- */
+/* Responsive tables (safety net). polish.js auto-wraps any .table that  */
+/* isn't already inside .table-responsive with this class, so it        */
+/* scrolls horizontally instead of overflowing the page on small        */
+/* screens — the table's own layout is untouched.                       */
+/* -------------------------------------------------------------------- */
+.polish-table-scroll {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* -------------------------------------------------------------------- */
+/* Responsive navigation polish                                          */
+/* -------------------------------------------------------------------- */
+@media (max-width: 991.98px) {
+  #mainNav .navbar-collapse {
+    background: #fff;
+    border-radius: 8px;
+    margin-top: 0.5rem;
+    padding: 0.75rem 1rem;
+    box-shadow: var(--polish-shadow);
+  }
+  #mainNav .nav-link {
+    padding: 0.6rem 0.25rem;
+  }
+}
+
+/* Make sure content isn't hidden behind the fixed navbar on mobile,
+   and forms/tables/images never force horizontal scroll on small screens. */
+@media (max-width: 575.98px) {
+  h1, .h1 { font-size: 1.9rem; }
+  h2, .h2 { font-size: 1.6rem; }
+  .masthead .card-body { padding: 1rem; }
+}
+img, iframe { max-width: 100%; }
+
+/* -------------------------------------------------------------------- */
+/* Toast notifications                                                   */
+/* -------------------------------------------------------------------- */
+#alert_toast {
+  position: fixed;
+  top: 84px;
+  right: 20px;
+  z-index: 10500;
+  min-width: 260px;
+  border: none;
+  border-radius: var(--polish-radius);
+  box-shadow: var(--polish-shadow-hover);
+  overflow: hidden;
+}
+#alert_toast .toast-body {
+  padding: 0.9rem 1.1rem;
+  font-weight: 500;
+}
+
+/* -------------------------------------------------------------------- */
+/* Misc polish                                                           */
+/* -------------------------------------------------------------------- */
+.badge {
+  border-radius: 6px;
+  font-weight: 500;
+}
+hr.divider {
+  transition: var(--polish-transition);
+}
+::selection {
+  background: rgba(244, 98, 58, 0.25);
+}
